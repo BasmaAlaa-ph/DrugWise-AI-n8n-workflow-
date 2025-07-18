@@ -1,0 +1,503 @@
+{
+  "name": "DrugWise AI",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -544,
+        272
+      ],
+      "id": "fcb030fb-4e31-452c-b2a4-c463c6cb2afe",
+      "name": "Telegram Trigger",
+      "webhookId": "7af46ceb-57bb-4336-ac84-e47333f73b47",
+      "credentials": {
+        "telegramApi": {
+          "id": "EK0qS38PfLIcrA2M",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nSpl product data element : {{ $json.results[0].spl_product_data_elements[0] }}\nactive ingredients :{{ $json.results[0].active_ingredient[0] }}\npurpose :{{ $json.results[0].purpose[0] }}\nindications and usage :{{ $json.results[0].indications_and_usage[0] }}\nWarnings :{{ $json.results[0].warnings[0] }}\ndont use : {{ $json.results[0].do_not_use }}\nask a doctor or a phramcist :{{ $json.results[0].ask_doctor_or_pharmacist[0] }}\nstop use :{{ $json.results[0].stop_use[0] }}\npregnancy or breast feeding :{{ $json.results[0].pregnancy_or_breast_feeding[0] }}\nkeep out reach of children :{{ $json.results[0].keep_out_of_reach_of_children[0] }}\ndosage and administration :{{ $json.results[0].dosage_and_administration[0] }}\nstorage and handling :{{ $json.results[0].storage_and_handling[0] }}\ninactive ingredients :{{ $json.results[0].inactive_ingredient[0] }}\nQuestions :{{ $json.results[0].questions[0] }}\nbrand name :{{ $json.results[0].openfda.brand_name[0] }}\ngeneric name :{{ $json.results[0].openfda.generic_name[0] }}\nmaufacturer name :{{ $json.results[0].openfda.manufacturer_name[0] }}\nproduct type :{{ $json.results[0].openfda.product_type[0] }}\nroute :{{ $json.results[0].openfda.route[0] }}\nsubstance name :{{ $json.results[0].openfda.substance_name[0] }}\npharm classes :{{ $json.results[0].openfda.pharm_class_moa[0] }},{{ $json.results[0].openfda.pharm_class_pe }},{{ $json.results[0].openfda.pharm_class_epc }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a specialized medical assistant AI that provides clear, accurate, and concise answers about medications using structured FDA drug label data. A user has asked for information about a drug.\n\nDrug Name: {{ $json.results[0].openfda.brand_name[0] || $json.results[0].openfda.generic_name[0] }}\nGeneric Name: {{ $json.results[0].openfda.generic_name[0] }}\nManufacturer: {{ $json.results[0].openfda.manufacturer_name[0] }}\nRoute: {{ $json.results[0].openfda.route[0] }}\nProduct Type: {{ $json.results[0].openfda.product_type[0] }}\n\nAnswer the user's question using the relevant fields below:\n\n- **Active Ingredients**: {{ $json.results[0].active_ingredient[0] }}\n- **Purpose**: {{ $json.results[0].purpose[0] }}\n- **Indications and Usage**: {{ $json.results[0].indications_and_usage[0] }}\n- **Warnings**: {{ $json.results[0].warnings[0] }}\n- **Do Not Use**: {{ $json.results[0].do_not_use }}\n- **Ask a Doctor or Pharmacist**: {{ $json.results[0].ask_doctor_or_pharmacist[0] }}\n- **Stop Use**: {{ $json.results[0].stop_use[0] }}\n- **Pregnancy or Breastfeeding Warning**: {{ $json.results[0].pregnancy_or_breast_feeding[0] }}\n- **Keep Out of Reach of Children**: {{ $json.results[0].keep_out_of_reach_of_children[0] }}\n- **Dosage and Administration**: {{ $json.results[0].dosage_and_administration[0] }}\n- **Storage and Handling**: {{ $json.results[0].storage_and_handling[0] }}\n- **Inactive Ingredients**: {{ $json.results[0].inactive_ingredient[0] }}\n- **Pharmacological Classes**: \n   - MOA: {{ $json.results[0].openfda.pharm_class_moa[0] }}\n   - PE: {{ $json.results[0].openfda.pharm_class_pe }}\n   - EPC: {{ $json.results[0].openfda.pharm_class_epc }}\n- **Substance Name**: {{ $json.results[0].openfda.substance_name[0] }}\n- **Questions/Contact Info**: {{ $json.results[0].questions[0] }}\n\n---\n\nUser Question: \"{{ $('Basic LLM Chain').item.json.output.originalMessage }}\"\nDrug the user asked about: {{ $('Basic LLM Chain').item.json.output.drugName }}\nThe requested field: {{ $('Basic LLM Chain').item.json.output.requestedField }}\n\nRespond with a medically accurate and concise answer using the above data. If the field is not present or the information is not available, clearly state: “That information could not be found in the current drug label data.”\n\nUse clear and user-friendly language, suitable for both patients and healthcare professionals.\n\n---\n\nIf no data is found, or if there is a technical issue (e.g., the drug is not found or OpenFDA is down), respond with the following message:\n\n**\"We’re sorry, but we couldn’t retrieve the drug information at this time. This might be due to a technical issue or the drug not being listed in the FDA database. Please try again later or verify the drug name.\"**\n\n---\n\nExample 1:  \nUser Question: \"What are the active ingredients?\"  \nAnswer: The active ingredient in this drug is Acetaminophen 500 mg.\n\nExample 2:  \nUser Question: \"Can I use this during pregnancy?\"  \nAnswer: According to the label, this drug should not be used during pregnancy unless directed by a healthcare provider.\n\nExample 3:  \nUser Question: \"What is the dosage?\"  \nAnswer: The recommended dosage is 1 tablet every 4–6 hours. Do not exceed 6 tablets in 24 hours.\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        944,
+        432
+      ],
+      "id": "afea0aca-ad76-42a3-96d2-1611414e9515",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "content": "## Get user's message ",
+        "height": 260,
+        "width": 280
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "fb4bb370-e930-4e6a-9e70-cd8b2e59847f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## Extract DrugName and Requested Field from user message",
+        "height": 240,
+        "width": 500,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "418d21d3-287f-45a0-bb41-1a14424103f1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "##  Search about Drug \n",
+        "height": 240,
+        "width": 280,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        528,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "4d26eec9-d513-4bee-bf9e-a2c033e2e64b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## LLM Chain to summarise response to the user ",
+        "height": 240,
+        "width": 500,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "bb453916-3a7e-4471-bf2c-6ab5bd753dc6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Send summary to the user \n",
+        "height": 240,
+        "width": 280
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1344,
+        352
+      ],
+      "typeVersion": 1,
+      "id": "30e4daa0-4bf8-41e8-a453-2fa2c722e377",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Gemini 2,5 pro Model ",
+        "height": 240,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "7d6425b4-628d-4e43-a01a-8e725142b217",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "url": "https://api.fda.gov/drug/label.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "search",
+              "value": "=openfda.brand_name:\"{{ $json.output.drugName }}\""
+            },
+            {
+              "name": "limit",
+              "value": "1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        624,
+        432
+      ],
+      "id": "0d723a6b-76f5-47ad-b2ed-7f3d61930838",
+      "name": "OpenFDA "
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        912,
+        688
+      ],
+      "id": "491521a2-8669-4785-898e-5f2800df88d7",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QCT1ZoKXI8ut889u",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1440,
+        432
+      ],
+      "id": "3bb2b395-79b3-4742-91c7-08a32b09f2a8",
+      "name": "Send a text message",
+      "webhookId": "d3679cf4-7abd-47fc-a473-ac88ee6b66eb",
+      "credentials": {
+        "telegramApi": {
+          "id": "j8lAS3Vg0f8P3Yj5",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent assistant designed to analyze a user’s message related to drug information.\n\nYour task is to:\n1. Extract the **drug name** mentioned in the message.\n2. Identify the **specific field** or **type of information** the user is requesting about the drug (e.g., dosage, side effects, active ingredients, manufacturer, pregnancy safety, etc.).\n3. Map the identified field to a structured field name used in OpenFDA or a general drug info schema.\n4. Return your answer in **JSON format** as shown below.\n\nYou must respond ONLY in this JSON format:\n\n{\n  \"originalMessage\": \"original user message here\",\n  \"drugName\": \"extracted drug name or 'unknown'\",\n  \"requestedField\": \"technical field key, like 'active_ingredient' or 'dosage_and_administration'\",\n  \"fieldDisplayName\": \"clean readable field name, like 'Dosage and Administration'\"\n}\n\n---\n\nList of field types and their matching user keywords:\n\n- **Active Ingredients** → active ingredient, main compound\n- **Purpose** → what is it used for, purpose\n- **Indications and Usage** → indications, how to use, use cases\n- **Warnings** → warning, side effects, risks, danger\n- **Dosage and Administration** → dosage, dose, how much, how to take\n- **Pregnancy or Breastfeeding** → safe for pregnancy?, breastfeeding?\n- **Manufacturer Name** → company, who makes it, manufacturer\n- **Brand Name** → brand name, commercial name\n- **Generic Name** → generic name, generic\n- **Mechanism of Action** → how it works, moa\n- **Storage and Handling** → how to store, storage instructions\n\nIf no field is clearly mentioned, default to `\"active_ingredient\"`.\nIf no drug name is clearly found, return `\"unknown\"` as the drugName.\n\nUse your best judgment to analyze the user's message and map it to the most appropriate field.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "={{ $json.message.text }}"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        128,
+        432
+      ],
+      "id": "dec129a7-2b0e-47d4-a1b2-e2889583fbde",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        688
+      ],
+      "id": "4b0c8c60-c15a-4a25-8f83-d258f937d5c3",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "QCT1ZoKXI8ut889u",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"originalMessage\": \"user message\",\n  \"drugName\": \"drugname\",\n  \"requestedField\": \"requestedField\",\n  \"fieldDisplayName\": \"fieldDisplayName\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        688
+      ],
+      "id": "8e050890-ce0e-4471-b649-3826c75812ef",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "content": "## Gemini 2,5 pro Model ",
+        "height": 240,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "e4727098-2bac-427a-b823-50863f7004de",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## Format the output ",
+        "height": 240,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        272,
+        608
+      ],
+      "typeVersion": 1,
+      "id": "7accba3d-88fc-4053-97f5-c77bf66c0897",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "22a748da-ecec-4276-9e37-630d2f7033e1",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        272
+      ],
+      "id": "609aeede-526d-4684-ad5a-1223a6ab84de",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "## Send Welcome message to the user \n",
+        "height": 260,
+        "width": 280
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "2c6e62c9-ebfc-43f6-9950-5098b8001e92",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=🧾 Welcome {{ $json.message.from.first_name }} {{ $json.message.from.last_name }}!  I can help you find trusted drug information from OpenFDA.\nYou can ask me about things like:\n• Usage or indications\n• Dosage and administration\n• Warnings, pregnancy safety, or ingredients\n\n👉 Please ask about ( one field ) at a time and make sure to include the drug name in each message\n(unless you've already mentioned it — we’ll support that automatically soon!).\n",
+        "replyMarkup": "=none",
+        "forceReply": {},
+        "replyKeyboardOptions": {},
+        "replyKeyboardRemove": {},
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        96
+      ],
+      "id": "a197ae0d-0271-46be-aef4-267dcbe62a21",
+      "name": "Send a text message1",
+      "webhookId": "d3679cf4-7abd-47fc-a473-ac88ee6b66eb",
+      "credentials": {
+        "telegramApi": {
+          "id": "j8lAS3Vg0f8P3Yj5",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## If node ",
+        "height": 260,
+        "width": 280,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        192
+      ],
+      "typeVersion": 1,
+      "id": "f0bb70b8-bc78-4396-80a7-68bef225ba12",
+      "name": "Sticky Note9"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenFDA ": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "OpenFDA ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c25c6ec5-ce3c-4265-9870-7afe48221d51",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ea4ddb5676bb623f1781601cc493a63728eee55950ed847bde0beb56c5ddaf0c"
+  },
+  "id": "8o9aIgM2ZWmB2fFa",
+  "tags": []
+}
